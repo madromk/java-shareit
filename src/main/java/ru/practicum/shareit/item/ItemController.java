@@ -26,9 +26,10 @@ public class ItemController {
     public ItemController(ItemService itemService) {
         this.itemService = itemService;
     }
+
     @PostMapping
     public ResponseEntity<Item> addItem(@RequestHeader(value = "X-Sharer-User-Id", required = false) Integer userId,
-                        @RequestBody Item item) {
+                                        @RequestBody Item item) {
         log.info("Получен запрос к эндпоинту: POST /items");
         return new ResponseEntity<>(itemService.addItem(item, userId), HttpStatus.CREATED);
     }
@@ -53,7 +54,7 @@ public class ItemController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<Item> updateItem(@RequestHeader(value = "X-Sharer-User-Id", required = false) Integer userId,
-                           @RequestBody Item item, @PathVariable("id") int id) {
+                                           @RequestBody Item item, @PathVariable("id") int id) {
         log.info("Получен запрос к эндпоинту PATCH /item");
         item.setId(id);
         return new ResponseEntity<>(itemService.updateItem(item, userId), HttpStatus.OK);
@@ -70,16 +71,19 @@ public class ItemController {
         log.warn("При обработке запроса возникло исключение: " + e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler
     public ResponseEntity<String> handleException(Exception e) {
         log.warn("При обработке запроса возникло исключение " + e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
     @ExceptionHandler
     public ResponseEntity<String> handleNotFoundException(InputDataException e) {
         log.warn("При обработке запроса возникло исключение: " + e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
+
     @ExceptionHandler
     public ResponseEntity<String> handleConflictDataException(InputExistDataException e) {
         log.warn("При обработке запроса возникло исключение: " + e.getMessage());

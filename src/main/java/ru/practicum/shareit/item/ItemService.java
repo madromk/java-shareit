@@ -34,14 +34,13 @@ public class ItemService {
         if(!userService.isContainsUser(userId)) {
             throw new InputDataException("Пользователь с id=" + userId + " не найден в БД");
         }
-        if(new ValidateItemData(item, userId).checkAllData()) {
+        if(new ValidateItemData(item).checkAllData()) {
             item.setUserId(userId);
             return itemStorage.addItem(item);
         } else {
             throw new ValidationException("Ошибка во входных данных");
         }
     }
-
 
     public Item getItemById(int id) {
         if(isContainItem(id)) {
@@ -59,7 +58,6 @@ public class ItemService {
         return itemStorage.getItemsBySubString(text);
     }
 
-
     public List<Item> getAllItems(Integer userId) {
         if(userId != null) {
             return getItemsByUserId(userId);
@@ -67,7 +65,6 @@ public class ItemService {
             return itemStorage.getAllItems();
         }
     }
-
 
     public Item updateItem(Item item, Integer userId) {
         if(userId == null) {
@@ -81,11 +78,9 @@ public class ItemService {
         }
     }
 
-
     public void deleteItem(int id) {
         itemStorage.deleteItem(id);
     }
-
 
     public boolean isContainItem(int id) {
         return itemStorage.isContainItem(id);

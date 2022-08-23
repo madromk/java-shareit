@@ -1,10 +1,7 @@
 package ru.practicum.shareit.item.storage;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exception.InputDataException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,8 +34,8 @@ public class InMemoryItemStorage implements ItemStorage {
     @Override
     public List<Item> getItemsByUserId(int userId) {
         List<Item> userItems = new ArrayList<>();
-        for(Item item : items.values()) {
-            if(item.getUserId() == userId) {
+        for (Item item : items.values()) {
+            if (item.getUserId() == userId) {
                 userItems.add(item);
             }
         }
@@ -48,13 +45,13 @@ public class InMemoryItemStorage implements ItemStorage {
     @Override
     public List<Item> getItemsBySubString(String text) {
         List<Item> findItems = new ArrayList<>();
-        if(text.isEmpty()) {
+        if (text.isEmpty()) {
             return findItems;
         }
-        for(Item item : items.values()) {
+        for (Item item : items.values()) {
             boolean condition = item.getName().toLowerCase().contains(text.toLowerCase()) ||
                     item.getDescription().toLowerCase().contains(text.toLowerCase());
-            if(condition && item.getAvailable()) {
+            if (condition && item.getAvailable()) {
                 findItems.add(item);
             }
         }
@@ -65,13 +62,13 @@ public class InMemoryItemStorage implements ItemStorage {
     public Item updateItem(Item item) {
         int idItem = item.getId();
         Item itemDb = items.get(idItem);
-        if(item.getName() != null) {
+        if (item.getName() != null) {
             itemDb.setName(item.getName());
         }
-        if(item.getDescription() != null) {
+        if (item.getDescription() != null) {
             itemDb.setDescription(item.getDescription());
         }
-        if(item.getAvailable() != null) {
+        if (item.getAvailable() != null) {
             itemDb.setAvailable(item.getAvailable());
         }
         items.put(idItem, itemDb);
@@ -80,7 +77,9 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public void deleteItem(int id) {
-
+        if (isContainItem(id)) {
+            items.remove(id);
+        }
     }
 
     @Override

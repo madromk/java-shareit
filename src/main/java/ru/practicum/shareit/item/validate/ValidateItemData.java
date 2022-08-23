@@ -7,11 +7,9 @@ import ru.practicum.shareit.item.model.Item;
 public class ValidateItemData {
 
     private final Item item;
-    private final int userId;
 
-    public ValidateItemData(Item item, int userId) {
+    public ValidateItemData(Item item) {
         this.item = item;
-        this.userId = userId;
     }
 
     public boolean checkAllData() {

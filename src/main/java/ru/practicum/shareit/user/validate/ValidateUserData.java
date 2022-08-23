@@ -5,6 +5,7 @@ import ru.practicum.shareit.user.model.User;
 
 @Slf4j
 public class ValidateUserData {
+
     private final User user;
 
     public ValidateUserData(User user) {
