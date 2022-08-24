@@ -35,10 +35,10 @@ public class InMemoryUserStorage implements UserStorage {
     public User updateUser(User user) {
         int id = user.getId();
         User userFromMemory = users.get(id);
-        if(user.getName() != null) {
+        if (user.getName() != null) {
             userFromMemory.setName(user.getName());
         }
-        if(user.getEmail() != null) {
+        if (user.getEmail() != null) {
             userFromMemory.setEmail(user.getEmail());
         }
         users.put(id, userFromMemory);
@@ -58,8 +58,8 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public boolean isExistEmail(String email) {
         boolean isExistEmail = false;
-        for(User user :users.values()) {
-            if(user.getEmail().equals(email)) {
+        for (User user :users.values()) {
+            if (user.getEmail().equals(email)) {
                 isExistEmail = true;
                 break;
             }

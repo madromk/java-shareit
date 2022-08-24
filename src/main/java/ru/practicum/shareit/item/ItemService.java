@@ -28,13 +28,13 @@ public class ItemService {
 
 
     public Item addItem(Item item, Integer userId) {
-        if(userId == null) {
+        if (userId == null) {
             throw new ValidationException("Отсутствует id пользователя, создавший данную вещь");
         }
-        if(!userService.isContainsUser(userId)) {
+        if (!userService.isContainsUser(userId)) {
             throw new InputDataException("Пользователь с id=" + userId + " не найден в БД");
         }
-        if(new ValidateItemData(item).checkAllData()) {
+        if (new ValidateItemData(item).checkAllData()) {
             item.setUserId(userId);
             return itemStorage.addItem(item);
         } else {
@@ -43,7 +43,7 @@ public class ItemService {
     }
 
     public Item getItemById(int id) {
-        if(isContainItem(id)) {
+        if (isContainItem(id)) {
             return itemStorage.getItemById(id);
         } else {
             throw new InputDataException("Вещь по id не найдена");
@@ -59,7 +59,7 @@ public class ItemService {
     }
 
     public List<Item> getAllItems(Integer userId) {
-        if(userId != null) {
+        if (userId != null) {
             return getItemsByUserId(userId);
         } else {
             return itemStorage.getAllItems();
@@ -67,11 +67,11 @@ public class ItemService {
     }
 
     public Item updateItem(Item item, Integer userId) {
-        if(userId == null) {
+        if (userId == null) {
             throw new ValidationException("Отсутствует id пользователя, создавший данную вещь");
         }
         Item itemFromDb = getItemById(item.getId());
-        if(itemFromDb.getUserId() == userId) {
+        if (itemFromDb.getUserId() == userId) {
             return itemStorage.updateItem(item);
         } else {
            throw new InputDataException("Id пользователя не совпадает с id создавшего вещь пользователя");

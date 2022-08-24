@@ -24,8 +24,8 @@ public class UserService {
     }
 
     public User addUser(User user) {
-        if(new ValidateUserData(user).checkAllData()) {
-            if(isExistEmail(user.getEmail())) {
+        if (new ValidateUserData(user).checkAllData()) {
+            if (isExistEmail(user.getEmail())) {
                 throw new InputExistDataException("Пользователь с таким email уже существует");
             }
             return userStorage.addUser(user);
@@ -36,7 +36,7 @@ public class UserService {
     }
 
     public User getUser(int id) {
-        if(isContainsUser(id)) {
+        if (isContainsUser(id)) {
             return userStorage.getUser(id);
         } else {
             log.warn("Запрос к эндпоинту GET /users/{} не обработан", id);
@@ -49,13 +49,13 @@ public class UserService {
     }
 
     public User updateUser(User user, int id) {
-        if(!isContainsUser(id)) {
-            throw new InputDataException("Пользователь с "+ id + " не найден");
+        if (!isContainsUser(id)) {
+            throw new InputDataException("Пользователь с " + id + " не найден");
         }
-        if(user.getEmail() != null && isExistEmail(user.getEmail())) {
+        if (user.getEmail() != null && isExistEmail(user.getEmail())) {
             throw new InputExistDataException("Пользователь с таким email уже существует");
         }
-        if(id > 0) {
+        if (id > 0) {
             user.setId(id);
             return userStorage.updateUser(user);
         } else {

@@ -13,7 +13,7 @@ public class ValidateUserData {
     }
 
     public boolean checkAllData() {
-        if(isCorrectEmail() && isCorrectName()) {
+        if (isCorrectEmail() && isCorrectName()) {
             return true;
         } else {
             return false;
@@ -21,7 +21,7 @@ public class ValidateUserData {
     }
 
     public boolean isCorrectEmail() {
-        if(user.getEmail() != null && !user.getEmail().isEmpty() && user.getEmail().contains("@")) {
+        if (user.getEmail() != null && !user.getEmail().isEmpty() && user.getEmail().contains("@")) {
             return true;
         } else {
             log.warn("Ошибка во входных данных. Электронная почта пустая или не содержит @");
@@ -30,7 +30,7 @@ public class ValidateUserData {
     }
 
     public boolean isCorrectName() {
-        if(!user.getName().isEmpty() && !user.getName().contains(" ")) {
+        if (!user.getName().isEmpty() && !user.getName().contains(" ")) {
             return true;
         } else {
             log.warn("Ошибка во входных данных. Логин пустой или содержит пробелы");
