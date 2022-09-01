@@ -17,14 +17,16 @@ import java.util.List;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final ValidateUserData validateUserData;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(UserStorage userStorage, ValidateUserData validateUserData) {
         this.userStorage = userStorage;
+        this.validateUserData = validateUserData;
     }
 
     public User addUser(User user) {
-        if (new ValidateUserData(user).checkAllData()) {
+        if (validateUserData.checkAllData(user)) {
             if (isExistEmail(user.getEmail())) {
                 throw new InputExistDataException("Пользователь с таким email уже существует");
             }

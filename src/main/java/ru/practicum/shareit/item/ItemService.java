@@ -19,11 +19,13 @@ public class ItemService {
 
     private final ItemStorage itemStorage;
     private final UserService userService;
+    private final ValidateItemData validateItemData;
 
     @Autowired
-    public ItemService(ItemStorage itemStorage, UserService userService) {
+    public ItemService(ItemStorage itemStorage, UserService userService, ValidateItemData validateItemData) {
         this.itemStorage = itemStorage;
         this.userService = userService;
+        this.validateItemData = validateItemData;
     }
 
 
@@ -34,7 +36,7 @@ public class ItemService {
         if (!userService.isContainsUser(userId)) {
             throw new InputDataException("Пользователь с id=" + userId + " не найден в БД");
         }
-        if (new ValidateItemData(item).checkAllData()) {
+        if (validateItemData.checkAllData(item)) {
             item.setUserId(userId);
             return itemStorage.addItem(item);
         } else {

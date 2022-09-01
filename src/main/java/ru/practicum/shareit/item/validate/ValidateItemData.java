@@ -1,18 +1,21 @@
 package ru.practicum.shareit.item.validate;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 
 @Slf4j
+@Component
 public class ValidateItemData {
 
-    private final Item item;
+    private Item item;
 
-    public ValidateItemData(Item item) {
+    private void setItem(Item item) {
         this.item = item;
     }
 
-    public boolean checkAllData() {
+    public boolean checkAllData(Item item) {
+        setItem(item);
         if (isCorrectName() && isCorrectDescription() && isCorrectAvailable()) {
             return true;
         } else {

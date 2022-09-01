@@ -3,14 +3,13 @@ package ru.practicum.shareit.item.storage;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class InMemoryItemStorage implements ItemStorage {
 
-    private final HashMap<Integer, Item> items = new HashMap<>();
+    private final Map<Integer, Item> items = new HashMap<>();
     private int id = 0;
 
     @Override
@@ -33,13 +32,10 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public List<Item> getItemsByUserId(int userId) {
-        List<Item> userItems = new ArrayList<>();
-        for (Item item : items.values()) {
-            if (item.getUserId() == userId) {
-                userItems.add(item);
-            }
-        }
-        return userItems;
+        return getAllItems()
+                .stream()
+                .filter(i -> Objects.equals(i.getUserId(), userId))
+                .collect(Collectors.toList());
     }
 
     @Override

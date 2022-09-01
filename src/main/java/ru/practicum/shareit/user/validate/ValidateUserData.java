@@ -1,18 +1,21 @@
 package ru.practicum.shareit.user.validate;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.model.User;
 
 @Slf4j
+@Component
 public class ValidateUserData {
 
-    private final User user;
+    private User user;
 
-    public ValidateUserData(User user) {
+    private void setUser(User user) {
         this.user = user;
     }
 
-    public boolean checkAllData() {
+    public boolean checkAllData(User user) {
+        setUser(user);
         if (isCorrectEmail() && isCorrectName()) {
             return true;
         } else {

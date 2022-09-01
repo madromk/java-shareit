@@ -21,6 +21,7 @@ import java.util.List;
 public class ItemController {
 
     private final ItemService itemService;
+    private static final String HEADER_USER_ID = "X-Sharer-User-Id";
 
     @Autowired
     public ItemController(ItemService itemService) {
@@ -28,14 +29,14 @@ public class ItemController {
     }
 
     @PostMapping
-    public ResponseEntity<Item> addItem(@RequestHeader(value = "X-Sharer-User-Id", required = false) Integer userId,
+    public ResponseEntity<Item> addItem(@RequestHeader(value = HEADER_USER_ID, required = false) Integer userId,
                                         @RequestBody Item item) {
         log.info("Получен запрос к эндпоинту: POST /items");
         return new ResponseEntity<>(itemService.addItem(item, userId), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<Item> getAllItem(@RequestHeader(value = "X-Sharer-User-Id", required = false) Integer userId) {
+    public List<Item> getAllItem(@RequestHeader(value = HEADER_USER_ID, required = false) Integer userId) {
         log.info("Получен запрос к эндпоинту: GET /items");
         return itemService.getAllItems(userId);
     }
@@ -53,7 +54,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Item> updateItem(@RequestHeader(value = "X-Sharer-User-Id", required = false) Integer userId,
+    public ResponseEntity<Item> updateItem(@RequestHeader(value = HEADER_USER_ID, required = false) Integer userId,
                                            @RequestBody Item item, @PathVariable("id") int id) {
         log.info("Получен запрос к эндпоинту PATCH /item");
         item.setId(id);
