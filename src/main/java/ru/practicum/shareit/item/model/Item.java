@@ -17,4 +17,13 @@ public class Item {
     private Boolean available;
     private int userId;
     private ItemRequest request;
+
+    public Item(int id, String name, String description, Boolean available, int userId, ItemRequest request) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.available = available;
+        this.userId = userId;
+        this.request = request;
+    }
 }

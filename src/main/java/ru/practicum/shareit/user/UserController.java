@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.InputDataException;
 import ru.practicum.shareit.exception.InputExistDataException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
 
@@ -23,27 +23,27 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> addUser(@RequestBody User user) {
+    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
         log.info("Получен запрос к эндпоинту POST /users");
-        return new ResponseEntity<>(userService.addUser(user), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.addUser(userDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable("id") int id) {
+    public ResponseEntity<UserDto> getUser(@PathVariable("id") int id) {
         log.info("Получен запрос к эндпоинту GET /users/{}", id);
         return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
     }
 
     @GetMapping
-    public List<User> getAllUser() {
+    public List<UserDto> getAllUser() {
         log.info("Получен запрос к эндпоинту: GET /users");
         return userService.getAllUsers();
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable("id") int id, @RequestBody User user) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable("id") int id, @RequestBody UserDto userDto) {
         log.info("Получен запрос к эндпоинту: PATCH /users");
-        return new ResponseEntity<>(userService.updateUser(user, id), HttpStatus.OK);
+        return new ResponseEntity<>(userService.updateUser(userDto, id), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

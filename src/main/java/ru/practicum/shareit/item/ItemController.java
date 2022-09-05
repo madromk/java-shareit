@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.InputDataException;
 import ru.practicum.shareit.exception.InputExistDataException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.ItemDto;
 
 import java.util.List;
 
@@ -29,36 +29,36 @@ public class ItemController {
     }
 
     @PostMapping
-    public ResponseEntity<Item> addItem(@RequestHeader(value = HEADER_USER_ID, required = false) Integer userId,
-                                        @RequestBody Item item) {
+    public ResponseEntity<ItemDto> addItem(@RequestHeader(value = HEADER_USER_ID, required = false) Integer userId,
+                                           @RequestBody ItemDto itemDto) {
         log.info("Получен запрос к эндпоинту: POST /items");
-        return new ResponseEntity<>(itemService.addItem(item, userId), HttpStatus.CREATED);
+        return new ResponseEntity<>(itemService.addItem(itemDto, userId), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<Item> getAllItem(@RequestHeader(value = HEADER_USER_ID, required = false) Integer userId) {
+    public List<ItemDto> getAllItem(@RequestHeader(value = HEADER_USER_ID, required = false) Integer userId) {
         log.info("Получен запрос к эндпоинту: GET /items");
         return itemService.getAllItems(userId);
     }
 
     @GetMapping("/{id}")
-    public Item getItemById(@PathVariable("id") int id) {
+    public ItemDto getItemById(@PathVariable("id") int id) {
         log.info("Получен запрос к эндпоинту GET /items/{}", id);
         return itemService.getItemById(id);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Item>> getItemsBySubstring(@RequestParam String text) {
+    public ResponseEntity<List<ItemDto>> getItemsBySubstring(@RequestParam String text) {
         log.info("Получен запрос к эндпоинту GET /items/search " + text);
         return new ResponseEntity<>(itemService.getItemsBySubString(text), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Item> updateItem(@RequestHeader(value = HEADER_USER_ID, required = false) Integer userId,
-                                           @RequestBody Item item, @PathVariable("id") int id) {
-        log.info("Получен запрос к эндпоинту PATCH /item");
-        item.setId(id);
-        return new ResponseEntity<>(itemService.updateItem(item, userId), HttpStatus.OK);
+    public ResponseEntity<ItemDto> updateItem(@RequestHeader(value = HEADER_USER_ID, required = false) Integer userId,
+                                           @RequestBody ItemDto itemDto, @PathVariable("id") int id) {
+        log.info("Получен запрос к эндпоинту PATCH /itemDto");
+        itemDto.setId(id);
+        return new ResponseEntity<>(itemService.updateItem(itemDto, userId), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

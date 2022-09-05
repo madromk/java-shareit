@@ -5,12 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.InputDataException;
 import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.model.ItemMapper;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.item.validate.ValidateItemData;
 import ru.practicum.shareit.user.UserService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -29,7 +32,9 @@ public class ItemService {
     }
 
 
-    public Item addItem(Item item, Integer userId) {
+    public ItemDto addItem(ItemDto itemDto, Integer userId) {
+        Item item = ItemMapper.fromItemDto(itemDto);
+        item.setUserId(userId);
         if (userId == null) {
             throw new ValidationException("Отсутствует id пользователя, создавший данную вещь");
         }
@@ -37,44 +42,54 @@ public class ItemService {
             throw new InputDataException("Пользователь с id=" + userId + " не найден в БД");
         }
         if (validateItemData.checkAllData(item)) {
-            item.setUserId(userId);
-            return itemStorage.addItem(item);
+            item.setId(userId);
+            return ItemMapper.toItemDto(itemStorage.addItem(item));
         } else {
             throw new ValidationException("Ошибка во входных данных");
         }
     }
 
-    public Item getItemById(int id) {
+    public ItemDto getItemById(int id) {
         if (isContainItem(id)) {
-            return itemStorage.getItemById(id);
+            return ItemMapper.toItemDto(itemStorage.getItemById(id));
         } else {
             throw new InputDataException("Вещь по id не найдена");
         }
     }
 
-    public List<Item> getItemsByUserId(int userId) {
-            return itemStorage.getItemsByUserId(userId);
+    public List<ItemDto> getItemsByUserId(int userId) {
+            return itemStorage.getItemsByUserId(userId)
+                    .stream()
+                    .map(ItemMapper::toItemDto)
+                    .collect(Collectors.toList());
     }
 
-    public List<Item> getItemsBySubString(String text) {
-        return itemStorage.getItemsBySubString(text);
+    public List<ItemDto> getItemsBySubString(String text) {
+        return itemStorage.getItemsBySubString(text)
+                .stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
-    public List<Item> getAllItems(Integer userId) {
+    public List<ItemDto> getAllItems(Integer userId) {
         if (userId != null) {
             return getItemsByUserId(userId);
         } else {
-            return itemStorage.getAllItems();
+            return itemStorage.getAllItems()
+                    .stream()
+                    .map(ItemMapper::toItemDto)
+                    .collect(Collectors.toList());
         }
     }
 
-    public Item updateItem(Item item, Integer userId) {
+    public ItemDto updateItem(ItemDto itemDto, Integer userId) {
         if (userId == null) {
             throw new ValidationException("Отсутствует id пользователя, создавший данную вещь");
         }
-        Item itemFromDb = getItemById(item.getId());
+        Item itemFromDb = itemStorage.getItemById(itemDto.getId());
         if (itemFromDb.getUserId() == userId) {
-            return itemStorage.updateItem(item);
+            Item item = ItemMapper.fromItemDto(itemDto);
+            return ItemMapper.toItemDto(itemStorage.updateItem(item));
         } else {
            throw new InputDataException("Id пользователя не совпадает с id создавшего вещь пользователя");
         }
