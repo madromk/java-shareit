@@ -28,7 +28,7 @@ public class ItemDto {
     private User owner;
     private Booking lastBooking;
     private Booking nextBooking;
-    Collection<Comment> comments = new ArrayList<>();
+    private Collection<Comment> comments = new ArrayList<>();
 
     @Data
     @AllArgsConstructor
@@ -54,8 +54,8 @@ public class ItemDto {
     @NoArgsConstructor
     @Data
     public static class Comment {
-        int id;
-        String text;
-        String authorName;
+        private int id;
+        private String text;
+        private String authorName;
     }
 }

@@ -28,16 +28,17 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking createBooking(int userId, Booking booking) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
         userService.isContainsUser(userId);
         int itemId = booking.getItem().getId();
         Item item = ItemMapper.fromItemDto(itemService.getItemById(itemId, userId));
         if (!item.getAvailable()) {
             throw new ValidationException("Вещь не свободна.");
         }
-        if (item.getOwner().getId() == (userId)) {
+        if (item.getOwner().getId() == userId) {
             throw new InputDataException("У пользователя нет прав");
         }
-        if (booking.getStart().isBefore(LocalDateTime.now()) || booking.getEnd().isBefore(LocalDateTime.now())
+        if (booking.getStart().isBefore(currentDateTime) || booking.getEnd().isBefore(currentDateTime)
                 || booking.getEnd().isBefore(booking.getStart())) {
             throw new ValidationException("Ошибка во входных данных по дате");
         }
@@ -74,6 +75,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Collection<Booking> findAllByOwnerId(int userId, String state) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
         userService.isContainsUser(userId);
         checkBookingState(state);
         Collection<Booking> result = null;
@@ -84,14 +86,14 @@ public class BookingServiceImpl implements BookingService {
                 break;
             case "CURRENT":
                 result = bookingRepository.findAllByItemOwnerIdAndEndIsAfterAndStartIsBefore(
-                        userId, LocalDateTime.now(), LocalDateTime.now());
+                        userId, currentDateTime, currentDateTime);
                 break;
             case "PAST":
-                result = bookingRepository.findAllByItemOwnerIdAndEndIsBefore(userId, LocalDateTime.now());
+                result = bookingRepository.findAllByItemOwnerIdAndEndIsBefore(userId, currentDateTime);
                 break;
             case "FUTURE":
                 result = bookingRepository.findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(
-                        userId, LocalDateTime.now());
+                        userId, currentDateTime);
                 break;
             case "WAITING":
                 result = bookingRepository.findAllByItemOwnerIdAndStatus(userId, BookingStatus.WAITING);
@@ -132,7 +134,7 @@ public class BookingServiceImpl implements BookingService {
         return result;
     }
 
-    private boolean checkBookingState(String result) {
+    private void checkBookingState(String result) {
         boolean flag = false;
 
         for (BookingState state : BookingState.values()) {
@@ -141,9 +143,7 @@ public class BookingServiceImpl implements BookingService {
                 break;
             }
         }
-        if (flag) {
-            return true;
-        } else {
+        if (!flag) {
             throw new ValidationException("Unknown state: " + result);
         }
     }
