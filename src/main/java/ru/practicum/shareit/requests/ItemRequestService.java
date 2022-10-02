@@ -7,19 +7,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.InputDataException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.requests.dto.ItemRequestDto;
 import ru.practicum.shareit.requests.mapper.ItemRequestMapper;
 import ru.practicum.shareit.requests.model.ItemRequest;
 import ru.practicum.shareit.requests.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.model.UserMapper;
+
 import ru.practicum.shareit.trait.PageTrait;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 @Slf4j
@@ -68,7 +67,7 @@ public class ItemRequestService implements PageTrait {
     }
 
     private void checkInputRequestData(ItemRequest requestDto) {
-        if(requestDto.getDescription() == null || requestDto.getDescription().isEmpty()) {
+        if (requestDto.getDescription() == null || requestDto.getDescription().isEmpty()) {
             throw new ValidationException("Отсутствует описание запрашиваемой вещи");
         }
     }

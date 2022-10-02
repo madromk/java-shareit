@@ -91,8 +91,7 @@ class ItemRequestControllerTest {
 
     @Test
     void testFindItemRequestsByUserId() throws Exception {
-        when(itemRequestService.getAllRequestByUserId(any(Integer.class))).thenReturn(List.of
-                                                                (mockItemRequest));
+        when(itemRequestService.getAllRequestByUserId(any(Integer.class))).thenReturn(List.of(mockItemRequest));
         doReturn(mockItemRequestDto).when(itemRequestMapper).toItemRequestDto(any());
 
         mockMvc.perform(get("/requests")

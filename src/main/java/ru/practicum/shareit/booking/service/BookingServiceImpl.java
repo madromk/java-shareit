@@ -144,6 +144,7 @@ public class BookingServiceImpl implements BookingService, PageTrait {
         }
         return result;
     }
+
     @Override
     public void checkBookingState(String result) {
         boolean flag = false;
