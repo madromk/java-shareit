@@ -9,6 +9,7 @@ import ru.practicum.shareit.exception.InputDataException;
 import ru.practicum.shareit.exception.InputExistDataException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.model.UserMapper;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @PostMapping
     public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
@@ -31,7 +33,8 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable("id") int id) {
         log.info("Получен запрос к эндпоинту GET /users/{}", id);
-        return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
+        UserDto userDto = userMapper.toUserDto(userService.getUser(id));
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
     @GetMapping
