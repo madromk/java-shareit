@@ -11,7 +11,6 @@ import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exception.InputDataException;
-import ru.practicum.shareit.exception.InputExistDataException;
 import ru.practicum.shareit.exception.ValidationErrorResponse;
 import ru.practicum.shareit.exception.ValidationException;
 
@@ -96,12 +95,6 @@ public class BookingController {
     public ResponseEntity<String> handleNotFoundException(InputDataException e) {
         log.warn("При обработке запроса возникло исключение: " + e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<String> handleConflictDataException(InputExistDataException e) {
-        log.warn("При обработке запроса возникло исключение: " + e.getMessage());
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
 
 }

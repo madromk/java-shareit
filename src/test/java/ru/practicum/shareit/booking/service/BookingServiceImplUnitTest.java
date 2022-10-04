@@ -57,42 +57,42 @@ public class BookingServiceImplUnitTest {
         mockitoSession.finishMocking();
     }
 
-    private final User mockUserFirst = User.builder().id(1).name("FirstUser").email("FirstUser@host.com").build();
-    private final User mockUserSecond = User.builder().id(2).name("SecondUser").email("SecondUser@host.com").build();
+    private final User mockUser1 = User.builder().id(1).name("User1").email("User1@ya.ru").build();
+    private final User mockUser2 = User.builder().id(2).name("User2").email("User2@ya.ru").build();
     private final Item mockItem1 = Item.builder().id(1).name("Item")
-            .description("ItemDescription").available(true).owner(mockUserFirst).build();
+            .description("ItemDescription").available(true).owner(mockUser1).build();
     private final Item mockItemUnAvailable = Item.builder().id(1).name("Item")
-            .description("ItemDescription").available(false).owner(mockUserFirst).build();
+            .description("ItemDescription").available(false).owner(mockUser1).build();
     private final Booking mockBooking1 = Booking.builder().id(1)
             .start(LocalDateTime.now().plusDays(1)).end(LocalDateTime.now().plusDays(2))
-            .item(mockItem1).booker(mockUserSecond).status(BookingStatus.WAITING).build();
+            .item(mockItem1).booker(mockUser2).status(BookingStatus.WAITING).build();
     private final Booking mockBookingUnAvailable = Booking.builder()
             .id(1).start(LocalDateTime.now().plusDays(3)).end(LocalDateTime.now().plusDays(4))
-            .item(mockItemUnAvailable).booker(mockUserSecond).status(BookingStatus.WAITING).build();
+            .item(mockItemUnAvailable).booker(mockUser2).status(BookingStatus.WAITING).build();
     private final Booking mockBookingEndFromLast = Booking.builder()
             .id(1).start(LocalDateTime.now().plusDays(5)).end(LocalDateTime.now().minusDays(6))
-            .item(mockItem1).booker(mockUserSecond).status(BookingStatus.WAITING).build();
+            .item(mockItem1).booker(mockUser2).status(BookingStatus.WAITING).build();
     private final Booking mockBookingStartFromLast = Booking.builder()
             .id(1).start(LocalDateTime.now().minusDays(2)).end(LocalDateTime.now().plusDays(6))
-            .item(mockItem1).booker(mockUserSecond).status(BookingStatus.WAITING).build();
+            .item(mockItem1).booker(mockUser2).status(BookingStatus.WAITING).build();
     private final Booking mockBookingStartAfterEnd = Booking.builder()
             .id(1).start(LocalDateTime.now().plusDays(5)).end(LocalDateTime.now().plusDays(2))
-            .item(mockItem1).booker(mockUserSecond).status(BookingStatus.WAITING).build();
+            .item(mockItem1).booker(mockUser2).status(BookingStatus.WAITING).build();
     private final Booking mockBookingWrongUser = Booking.builder()
             .id(1).start(LocalDateTime.now().plusDays(5)).end(LocalDateTime.now().plusDays(10))
-            .item(mockItem1).booker(mockUserFirst).status(BookingStatus.WAITING).build();
+            .item(mockItem1).booker(mockUser1).status(BookingStatus.WAITING).build();
     private final Booking mockBookingApproved1 = Booking.builder()
             .id(1).start(LocalDateTime.now().plusDays(5)).end(LocalDateTime.now().plusDays(10))
-            .item(mockItem1).booker(mockUserSecond).status(BookingStatus.APPROVED).build();
+            .item(mockItem1).booker(mockUser2).status(BookingStatus.APPROVED).build();
     private final Booking mockBookingRejected1 = Booking.builder()
             .id(1).start(LocalDateTime.now().plusDays(5)).end(LocalDateTime.now().plusDays(10))
-            .item(mockItem1).booker(mockUserSecond).status(BookingStatus.REJECTED).build();
+            .item(mockItem1).booker(mockUser2).status(BookingStatus.REJECTED).build();
     private final Booking mockBooking2 = Booking.builder()
             .id(1).start(LocalDateTime.now().plusDays(5)).end(LocalDateTime.now().plusDays(10))
-            .item(mockItem1).booker(mockUserSecond).status(BookingStatus.WAITING).build();
+            .item(mockItem1).booker(mockUser2).status(BookingStatus.WAITING).build();
     private final Booking mockBooking3 = Booking.builder()
             .id(5).start(LocalDateTime.now().plusDays(1)).end(LocalDateTime.now().plusDays(2))
-            .item(mockItem1).booker(mockUserSecond).status(BookingStatus.WAITING).build();
+            .item(mockItem1).booker(mockUser2).status(BookingStatus.WAITING).build();
 
     @Test
     void testCreateBooking() throws ValidationException {
@@ -116,7 +116,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testCreateBooking_FailedValidationBookingEndFromLast() throws ValidationException {
+    void testCreateBookingFailedValidationBookingEndFromLast() throws ValidationException {
         Mockito.when(itemService.getItemById(anyInt(), anyInt())).thenReturn(mockItem1);
 
         Exception exception = assertThrows(ValidationException.class, () ->
@@ -126,7 +126,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testCreateBooking_FailedValidationBookingStartAfterEnd() throws ValidationException {
+    void testCreateBookingFailedValidationBookingStartAfterEnd() throws ValidationException {
         Mockito.when(itemService.getItemById(anyInt(), anyInt())).thenReturn(mockItem1);
 
         Exception exception = assertThrows(ValidationException.class, () ->
@@ -136,7 +136,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testCreateBooking_FailedValidationBookingWrongUser() throws ValidationException {
+    void testCreateBookingFailedValidationBookingWrongUser() throws ValidationException {
         Mockito.when(itemService.getItemById(anyInt(), anyInt())).thenReturn(mockItem1);
 
         Exception exception = assertThrows(InputDataException.class, () ->
@@ -146,7 +146,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testCreateBooking_FailedValidationItem() throws ValidationException {
+    void testCreateBookingFailedValidationItem() throws ValidationException {
         Mockito.when(itemService.getItemById(anyInt(), anyInt())).thenReturn(mockItemUnAvailable);
 
         Exception exception1 = assertThrows(ValidationException.class, () ->
@@ -168,7 +168,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testSetApproved_StatusNotWaiting() {
+    void testSetApprovedStatusNotWaiting() {
         Mockito.when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(mockBookingApproved1));
 
         Exception exception = assertThrows(ValidationException.class, () ->
@@ -178,7 +178,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testSetApproved_WrongUser() {
+    void testSetApprovedWrongUser() {
         Mockito.when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(mockBooking1));
 
         Exception exception = assertThrows(InputDataException.class, () ->
@@ -225,7 +225,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testFindBookingById_WrongUser() {
+    void testFindBookingByIdWrongUser() {
         Mockito.when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(mockBooking1));
 
         Exception exception = assertThrows(InputDataException.class, () ->
@@ -235,7 +235,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testFindAllByBookerId_StateAll() throws InputDataException, ValidationException {
+    void testFindAllByBookerIdStateAll() throws InputDataException, ValidationException {
         Mockito.when(bookingRepository.findAllByBookerId(anyInt(), Mockito.any(Pageable.class)))
                 .thenReturn(List.of(mockBooking1, mockBooking2, mockBooking3));
 
@@ -249,7 +249,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testFindAllByBookerId_StateCurrent() throws InputDataException, ValidationException {
+    void testFindAllByBookerIdStateCurrent() throws InputDataException, ValidationException {
         Mockito.when(bookingRepository.findForBookerCurrent(anyInt(), Mockito.any(Pageable.class)))
                 .thenReturn(List.of(mockBooking2, mockBooking3));
 
@@ -264,7 +264,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testFindAllByBookerId_StatePast() throws InputDataException, ValidationException {
+    void testFindAllByBookerIdStatePast() throws InputDataException, ValidationException {
         Mockito.when(bookingRepository.findAllByBookerIdAndEndIsBefore(anyInt(),
                         Mockito.any(LocalDateTime.class), Mockito.any(Pageable.class)))
                 .thenReturn(List.of(mockBooking1, mockBooking2));
@@ -280,7 +280,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testFindAllByBookerId_StateFuture() throws InputDataException, ValidationException {
+    void testFindAllByBookerIdStateFuture() throws InputDataException, ValidationException {
         Mockito.when(bookingRepository.findAllByBookerAndFutureState(anyInt(),
                         Mockito.any(Pageable.class)))
                 .thenReturn(List.of(mockBooking1, mockBooking3));
@@ -296,7 +296,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testFindAllByBookerId_StateWaiting() throws InputDataException, ValidationException {
+    void testFindAllByBookerIdStateWaiting() throws InputDataException, ValidationException {
         Mockito.when(bookingRepository.findAllByBookerIdAndStatus(anyInt(),
                         Mockito.any(BookingStatus.class), Mockito.any(Pageable.class)))
                 .thenReturn(List.of(mockBooking3));
@@ -313,7 +313,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testFindAllByBookerId_StateRejected() throws InputDataException, ValidationException {
+    void testFindAllByBookerIdStateRejected() throws InputDataException, ValidationException {
         Mockito.when(bookingRepository.findAllByBookerIdAndStatus(anyInt(),
                         Mockito.any(BookingStatus.class), Mockito.any(Pageable.class)))
                 .thenReturn(List.of(mockBooking2));
@@ -330,7 +330,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testFindAllByOwnerId_StateAll() throws InputDataException, ValidationException {
+    void testFindAllByOwnerIdStateAll() throws InputDataException, ValidationException {
         Mockito.when(bookingRepository.findAllByItemOwnerId(anyInt(), Mockito.any(Pageable.class)))
                 .thenReturn(List.of(mockBooking1, mockBooking2, mockBooking3));
 
@@ -344,7 +344,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testFindAllByOwnerId_StateCurrent() throws InputDataException, ValidationException {
+    void testFindAllByOwnerIdStateCurrent() throws InputDataException, ValidationException {
         Mockito.when(bookingRepository.findAllByItemOwnerIdAndEndIsAfterAndStartIsBefore(anyInt(),
                         Mockito.any(LocalDateTime.class), Mockito.any(LocalDateTime.class), Mockito.any(Pageable.class)))
                 .thenReturn(List.of(mockBooking2, mockBooking3));
@@ -360,7 +360,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testGetAllByOwnerId_StatePast() throws InputDataException, ValidationException {
+    void testGetAllByOwnerIdStatePast() throws InputDataException, ValidationException {
         Mockito.when(bookingRepository.findAllByItemOwnerIdAndEndIsBefore(anyInt(),
                         Mockito.any(LocalDateTime.class), Mockito.any(Pageable.class)))
                 .thenReturn(List.of(mockBooking1, mockBooking2));
@@ -376,7 +376,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testGetAllByOwnerId_StateFuture() throws InputDataException, ValidationException {
+    void testGetAllByOwnerIdStateFuture() throws InputDataException, ValidationException {
         Mockito.when(bookingRepository.findAllByItemOwnerIdAndStartIsAfter(anyInt(),
                         Mockito.any(LocalDateTime.class), Mockito.any(Pageable.class)))
                 .thenReturn(List.of(mockBooking1, mockBooking3));
@@ -392,7 +392,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testGetAllByOwnerId_StateWaiting() throws InputDataException, ValidationException {
+    void testGetAllByOwnerIdStateWaiting() throws InputDataException, ValidationException {
         Mockito.when(bookingRepository.findAllByItemOwnerIdAndStatus(anyInt(),
                         Mockito.any(BookingStatus.class), Mockito.any(Pageable.class)))
                 .thenReturn(List.of(mockBooking3));
@@ -408,7 +408,7 @@ public class BookingServiceImplUnitTest {
     }
 
     @Test
-    void testGetAllByOwnerId_StateRejected() throws InputDataException, ValidationException {
+    void testGetAllByOwnerIdStateRejected() throws InputDataException, ValidationException {
         Mockito.when(bookingRepository.findAllByItemOwnerIdAndStatus(anyInt(),
                         Mockito.any(BookingStatus.class), Mockito.any(Pageable.class)))
                 .thenReturn(List.of(mockBooking2));

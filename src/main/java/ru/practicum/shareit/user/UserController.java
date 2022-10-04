@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.InputDataException;
-import ru.practicum.shareit.exception.InputExistDataException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.UserMapper;
@@ -71,11 +70,5 @@ public class UserController {
     public ResponseEntity<String> handleNotFoundException(InputDataException e) {
         log.warn("При обработке запроса возникло исключение: " + e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<String> handleConflictDataException(InputExistDataException e) {
-        log.warn("При обработке запроса возникло исключение: " + e.getMessage());
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
 }

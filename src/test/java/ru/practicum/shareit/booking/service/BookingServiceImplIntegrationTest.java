@@ -88,7 +88,7 @@ class BookingServiceImplIntegrationTest {
     }
 
     @Test
-    void testFindAllByBookerId_WrongUser() {
+    void testFindAllByBookerIdWrongUser() {
         Exception exception = assertThrows(InputDataException.class, () ->
                 bookingService.findAllByBookerId(mockBooker.getId(), BookingState.WAITING.toString(), 0, 20));
 

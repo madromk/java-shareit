@@ -2,11 +2,14 @@ package ru.practicum.shareit.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.exception.InputDataException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.UserController;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -18,6 +21,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -26,6 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = UserController.class)
 class UserControllerTest {
+
+    private static final String HEADER_USER_ID = "X-Sharer-User-Id";
     @MockBean
     private UserService userService;
     @MockBean
@@ -101,5 +107,32 @@ class UserControllerTest {
     @Test
     void testDeleteUser() throws Exception {
         mockMvc.perform(delete("/users/1")).andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetUserByWrongId() throws Exception {
+        when(userService.getUser(anyInt())).thenThrow(new InputDataException("Пользователь с таким id не найден"));
+
+        mockMvc.perform(get("/users/1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header(HEADER_USER_ID, 1))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    void addUserWithWrongData() throws Exception {
+        when(userService.addUser(Mockito.any(UserDto.class)))
+                .thenThrow(new ValidationException("Одно или несколько условий не выполняются"));
+
+        mockMvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(mockUserDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 }
