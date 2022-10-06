@@ -96,7 +96,8 @@ class ItemControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .header(HEADER_USER_ID, 1);
     }
-    
+
+
     @Test
     void testCreateItem() throws Exception {
         when(itemService.addItem(any(), any(Integer.class))).thenReturn(mockItem);
