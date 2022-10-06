@@ -1,5 +1,6 @@
 package ru.practicum.shareit.requests.repository;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -34,12 +35,16 @@ class ItemRequestRepositoryTest {
             .requester(user2).created(LocalDateTime.now().plusDays(1)).build();
 
 
-    @Test
-    void testFindAllByRequesterIdOrderByCreatedDesc() {
+    @BeforeEach
+    void saveData() {
         userRepository.save(user1);
         userRepository.save(user2);
         itemRequestRepository.save(mockItemRequest1);
         itemRequestRepository.save(mockItemRequest2);
+    }
+
+    @Test
+    void testFindAllByRequesterIdOrderByCreatedDesc() {
 
         Collection<ItemRequest> itemRequests = itemRequestRepository.findAllByRequesterIdOrderByCreatedDesc(1);
 
@@ -48,11 +53,7 @@ class ItemRequestRepositoryTest {
     }
 
     @Test
-    void testFindAllByRequestorIdNotOrderByCreatedDesc() {
-        userRepository.save(user1);
-        userRepository.save(user2);
-        itemRequestRepository.save(mockItemRequest1);
-        itemRequestRepository.save(mockItemRequest2);
+    void testFindAllByRequesterIdNotOrderByCreatedDesc() {
 
         Sort sortById = Sort.by(Sort.Direction.DESC, "created");
         Pageable page = PageRequest.of(PAGE, SIZE, sortById);

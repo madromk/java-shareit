@@ -18,7 +18,7 @@ import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.validate.ValidateItemData;
 import ru.practicum.shareit.requests.ItemRequestService;
-import ru.practicum.shareit.trait.PageTrait;
+import ru.practicum.shareit.trait.PageTool;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class ItemService implements PageTrait {
+public class ItemService implements PageTool {
 
     private final ItemRepository itemRepository;
     private final UserService userService;

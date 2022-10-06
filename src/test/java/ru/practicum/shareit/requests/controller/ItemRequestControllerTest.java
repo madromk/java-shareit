@@ -1,5 +1,6 @@
 package ru.practicum.shareit.requests.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.requests.ItemRequestController;
 import ru.practicum.shareit.requests.ItemRequestService;
@@ -49,18 +51,22 @@ class ItemRequestControllerTest {
     private final ItemRequest mockItemRequest = ItemRequest.builder().id(1).description("Description")
             .requester(mockUser).created(LocalDateTime.now()).build();
 
+    MockHttpServletRequestBuilder getContentWithGPostMethod(String url) throws JsonProcessingException {
+        return post(url)
+                .content(objectMapper.writeValueAsString(mockItemRequestDto))
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HEADER_USER_ID, 1);
+    }
+
 
     @Test
     void testCreateItemRequest() throws Exception {
         when(itemRequestService.createRequest(any(Integer.class), any())).thenReturn(mockItemRequest);
         doReturn(mockItemRequestDto).when(itemRequestMapper).toItemRequestDto(any());
 
-        mockMvc.perform(post("/requests")
-                        .content(objectMapper.writeValueAsString(mockItemRequestDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(HEADER_USER_ID, 1))
+        mockMvc.perform(getContentWithGPostMethod("/requests"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(mockItemRequestDto.getId()), Integer.class))
@@ -77,13 +83,7 @@ class ItemRequestControllerTest {
     void testCreateItemRequestFailedValidation() throws Exception {
         when(itemRequestService.createRequest(any(Integer.class), any()))
                 .thenThrow(new ValidationException("Отсутствует описание запрашиваемой вещи"));
-
-        mockMvc.perform(post("/requests")
-                        .content(objectMapper.writeValueAsString(mockItemRequestDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(HEADER_USER_ID, 1))
+        mockMvc.perform(getContentWithGPostMethod("/requests"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.error", is("Отсутствует описание запрашиваемой вещи")));

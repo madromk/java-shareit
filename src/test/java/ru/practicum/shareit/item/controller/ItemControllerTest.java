@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import ru.practicum.shareit.exception.InputDataException;
 import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.item.ItemService;
@@ -86,18 +88,21 @@ class ItemControllerTest {
             .created(LocalDateTime.now())
             .build();
 
-
+    MockHttpServletRequestBuilder getContentWithPostMethod(String url) throws JsonProcessingException {
+        return post(url)
+                .content(objectMapper.writeValueAsString(mockItemDto))
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HEADER_USER_ID, 1);
+    }
+    
     @Test
     void testCreateItem() throws Exception {
         when(itemService.addItem(any(), any(Integer.class))).thenReturn(mockItem);
         doReturn(mockItemDto).when(itemMapper).toItemDto(any());
 
-        mockMvc.perform(post("/items")
-                        .content(objectMapper.writeValueAsString(mockItemDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(HEADER_USER_ID, 1))
+        mockMvc.perform(getContentWithPostMethod("/items"))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(mockItemDto.getId()), Integer.class))
@@ -263,12 +268,7 @@ class ItemControllerTest {
                 .thenReturn(mockComment);
         doReturn(mockCommentDto).when(commentMapper).toCommentDto(any());
 
-        mockMvc.perform(post("/items/1/comment")
-                        .content(objectMapper.writeValueAsString(mockCommentDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(HEADER_USER_ID, 1))
+        mockMvc.perform(getContentWithPostMethod("/items/1/comment"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(mockCommentDto.getId()), Integer.class))

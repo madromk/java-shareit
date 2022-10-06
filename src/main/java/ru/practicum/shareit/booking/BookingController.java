@@ -27,12 +27,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BookingController {
     private static final String HEADER_USER_ID = "X-Sharer-User-Id";
-
-    private final BookingService bookingService;
-    private final BookingMapper bookingMapper;
-
     private static final String FROM = "0";
     private static final String SIZE = "20";
+    private final BookingService bookingService;
+    private final BookingMapper bookingMapper;
 
     @PostMapping
     public CreatedBookingDto createBooking(@RequestHeader(HEADER_USER_ID) int userId,

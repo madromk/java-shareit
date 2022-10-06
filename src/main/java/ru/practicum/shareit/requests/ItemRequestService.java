@@ -13,7 +13,7 @@ import ru.practicum.shareit.requests.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
-import ru.practicum.shareit.trait.PageTrait;
+import ru.practicum.shareit.trait.PageTool;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -23,7 +23,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ItemRequestService implements PageTrait {
+public class ItemRequestService implements PageTool {
 
     private final ItemRequestRepository requestRepository;
     private final UserService userService;

@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.repository;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -35,17 +36,23 @@ class ItemRepositoryTest {
     private final Item mockItem2 = Item.builder().name("Item2")
             .description("Description2").available(true).owner(mockUser2).build();
 
-    @Test
-    void testGetAllByOwnerId() {
+    Pageable getPage() {
+        Sort sortById = Sort.by(Sort.Direction.DESC, "id");
+        return PageRequest.of(PAGE, SIZE, sortById);
+    }
+
+    @BeforeEach
+    void saveData() {
         userRepository.save(mockUser1);
         userRepository.save(mockUser2);
         itemRepository.save(mockItem1);
         itemRepository.save(mockItem2);
+    }
 
-        Sort sortById = Sort.by(Sort.Direction.DESC, "id");
-        Pageable page = PageRequest.of(PAGE, SIZE, sortById);
+    @Test
+    void testGetAllByOwnerId() {
 
-        Collection<Item> items = itemRepository.findAllByOwnerId(1, page);
+        Collection<Item> items = itemRepository.findAllByOwnerId(1, getPage());
 
         assertThat(items).isNotEmpty();
         assertThat(items).hasSize(1).contains(mockItem1);
@@ -53,15 +60,8 @@ class ItemRepositoryTest {
 
     @Test
     void testSearch() {
-        userRepository.save(mockUser1);
-        userRepository.save(mockUser2);
-        itemRepository.save(mockItem1);
-        itemRepository.save(mockItem2);
 
-        Sort sortById = Sort.by(Sort.Direction.DESC, "id");
-        Pageable page = PageRequest.of(PAGE, SIZE, sortById);
-
-        Collection<Item> items = itemRepository.search("Description2", page);
+        Collection<Item> items = itemRepository.search("Description2", getPage());
 
         assertThat(items).isNotEmpty();
         assertThat(items).hasSize(1).contains(mockItem2);

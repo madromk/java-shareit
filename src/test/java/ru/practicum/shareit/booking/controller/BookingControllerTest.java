@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import ru.practicum.shareit.booking.BookingController;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.CreatedBookingDto;
@@ -88,6 +90,26 @@ class BookingControllerTest {
             .status(BookingStatus.WAITING)
             .build();
 
+    MockHttpServletRequestBuilder getContentWithPatchMethod() throws JsonProcessingException {
+        return patch("/bookings/1")
+                .content(objectMapper.writeValueAsString(mockBookingDto))
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HEADER_USER_ID, 1)
+                .queryParam("approved", "true");
+    }
+
+    MockHttpServletRequestBuilder getContentWithGetMethod(String url) throws JsonProcessingException {
+        return get(url)
+                .content(objectMapper.writeValueAsString(mockBookingDto))
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HEADER_USER_ID, 1);
+    }
+
+
     @Test
     void testCreateItem() throws Exception {
         when(bookingService.createBooking(anyInt(), any())).thenReturn(mockBooking);
@@ -114,13 +136,7 @@ class BookingControllerTest {
         when(bookingService.setApproved(anyInt(), anyInt(), anyBoolean())).thenReturn(mockBooking);
         doReturn(mockBookingDto).when(bookingMapper).toBookingDto(any());
 
-        mockMvc.perform(patch("/bookings/1")
-                        .content(objectMapper.writeValueAsString(mockBookingDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(HEADER_USER_ID, 1)
-                        .queryParam("approved", "true"))
+        mockMvc.perform(getContentWithPatchMethod())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(mockBookingDto.getId()), Integer.class))
@@ -138,13 +154,7 @@ class BookingControllerTest {
         when(bookingService.setApproved(anyInt(), anyInt(), anyBoolean()))
                 .thenThrow(new InputDataException("Пользователь не может менять статус"));
 
-        mockMvc.perform(patch("/bookings/1")
-                        .content(objectMapper.writeValueAsString(mockBookingDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(HEADER_USER_ID, 1)
-                        .queryParam("approved", "true"))
+        mockMvc.perform(getContentWithPatchMethod())
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
@@ -154,13 +164,7 @@ class BookingControllerTest {
         when(bookingService.findBookingById(anyInt(), anyInt())).thenReturn(mockBooking);
 
         doReturn(mockBookingDto).when(bookingMapper).toBookingDto(any());
-
-        mockMvc.perform(get("/bookings/1")
-                        .content(objectMapper.writeValueAsString(mockBookingDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(HEADER_USER_ID, 1))
+        mockMvc.perform(getContentWithGetMethod("/bookings/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(mockBookingDto.getId()), Integer.class))
@@ -178,13 +182,7 @@ class BookingControllerTest {
         when(bookingService.findAllByBookerId(anyInt(), any(String.class), anyInt(), anyInt()))
                 .thenReturn(List.of(mockBooking));
         doReturn(mockBookingDto).when(bookingMapper).toBookingDto(any());
-
-        mockMvc.perform(get("/bookings")
-                        .content(objectMapper.writeValueAsString(mockBookingDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(HEADER_USER_ID, 1))
+        mockMvc.perform(getContentWithGetMethod("/bookings"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.[0].id", is(mockBookingDto.getId()), Integer.class))
@@ -215,11 +213,7 @@ class BookingControllerTest {
                     }
                 });
 
-        mockMvc.perform(get("/bookings")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(HEADER_USER_ID, 1)
+        mockMvc.perform((getContentWithGetMethod("/bookings"))
                         .queryParam("state", "UNSUPPORTED_STATUS"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -230,13 +224,7 @@ class BookingControllerTest {
         when(bookingService.findAllByOwnerId(anyInt(), any(String.class), anyInt(), anyInt()))
                 .thenReturn(List.of(mockBooking));
         doReturn(mockBookingDto).when(bookingMapper).toBookingDto(any());
-
-        mockMvc.perform(get("/bookings/owner")
-                        .content(objectMapper.writeValueAsString(mockBookingDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(HEADER_USER_ID, 1))
+        mockMvc.perform(getContentWithGetMethod("/bookings/owner"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.[0].id", is(mockBookingDto.getId()), Integer.class))
@@ -267,11 +255,7 @@ class BookingControllerTest {
                 }
                 });
 
-        mockMvc.perform(get("/bookings/owner")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(HEADER_USER_ID, 1)
+        mockMvc.perform(getContentWithGetMethod("/bookings/owner")
                         .queryParam("state", "UNSUPPORTED_STATUS"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));

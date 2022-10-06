@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -35,72 +36,68 @@ class BookingRepositoryTest {
     private BookingRepository bookingRepository;
 
 
-    private static final User mockUserFirst = User.builder().id(1).name("User1")
+    private static final User mockUser1 = User.builder().id(1).name("User1")
             .email("User1@ya.com").build();
-    private static final User mockUserSecond = User.builder().id(2).name("User2")
+    private static final User mockUser2 = User.builder().id(2).name("User2")
             .email("User2@ya.com").build();
 
     private static final Item mockItem1 = Item.builder().id(1).name("Item").description("Description")
-            .available(true).owner(mockUserFirst).build();
+            .available(true).owner(mockUser1).build();
     private static final Item mockItem2 = Item.builder().name("Item").description("Description")
-            .available(true).owner(mockUserSecond).build();
+            .available(true).owner(mockUser2).build();
 
     private static final Booking mockBooking1 = Booking.builder().id(1)
             .start(LocalDate.now().atStartOfDay().plusDays(1))
             .end(LocalDate.now().atStartOfDay().plusDays(2))
-            .item(mockItem1).booker(mockUserSecond).status(BookingStatus.WAITING).build();
+            .item(mockItem1).booker(mockUser2).status(BookingStatus.WAITING).build();
 
     private static final Booking mockBooking2 = Booking.builder().id(2)
             .start(LocalDate.now().atStartOfDay().plusMonths(1))
             .end(LocalDate.now().atStartOfDay().plusMonths(1).plusDays(3))
-            .item(mockItem1).booker(mockUserSecond).status(BookingStatus.APPROVED).build();
+            .item(mockItem1).booker(mockUser2).status(BookingStatus.APPROVED).build();
 
     private static final Booking mockBooking3 = Booking.builder()
             .start(LocalDate.now().atStartOfDay().plusDays(4))
             .end(LocalDate.now().atStartOfDay().plusDays(5))
-            .item(mockItem2).booker(mockUserFirst).status(BookingStatus.WAITING).build();
+            .item(mockItem2).booker(mockUser1).status(BookingStatus.WAITING).build();
 
     private static final Booking mockBooking4 = Booking.builder()
             .start(LocalDate.now().atStartOfDay().plusDays(6)).end(LocalDate.now().atStartOfDay().plusDays(7))
-            .item(mockItem2).booker(mockUserFirst).status(BookingStatus.REJECTED).build();
+            .item(mockItem2).booker(mockUser1).status(BookingStatus.REJECTED).build();
 
-    @Test
-    void testFindAllByBookerId() {
-        userRepository.save(mockUserFirst);
-        userRepository.save(mockUserSecond);
+    Pageable getPage() {
+        Sort sortById = Sort.by(Sort.Direction.DESC, "start");
+        return PageRequest.of(PAGE, SIZE, sortById);
+    }
+
+    @BeforeEach
+    void saveData() {
+        userRepository.save(mockUser1);
+        userRepository.save(mockUser2);
         itemRepository.save(mockItem1);
         itemRepository.save(mockItem2);
         bookingRepository.save(mockBooking1);
         bookingRepository.save(mockBooking2);
         bookingRepository.save(mockBooking3);
         bookingRepository.save(mockBooking4);
+    }
 
-        Sort sortById = Sort.by(Sort.Direction.DESC, "start");
-        Pageable page = PageRequest.of(PAGE, SIZE, sortById);
+    @Test
+    void testFindAllByBookerId() {
 
-        Collection<Booking> bookings = bookingRepository.findAllByBookerId(2, page);
+        Collection<Booking> bookings = bookingRepository.findAllByBookerId(2, getPage());
 
         assertThat(bookings).isNotEmpty();
         assertThat(bookings).hasSize(2).contains(mockBooking1, mockBooking2);
     }
 
 
+
     @Test
     void testFindAllByBookerIdAndEndIsBefore() {
-        userRepository.save(mockUserFirst);
-        userRepository.save(mockUserSecond);
-        itemRepository.save(mockItem1);
-        itemRepository.save(mockItem2);
-        bookingRepository.save(mockBooking1);
-        bookingRepository.save(mockBooking2);
-        bookingRepository.save(mockBooking3);
-        bookingRepository.save(mockBooking4);
-
-        Sort sortById = Sort.by(Sort.Direction.DESC, "start");
-        Pageable page = PageRequest.of(PAGE, SIZE, sortById);
 
         Collection<Booking> bookings = bookingRepository.findAllByBookerIdAndEndIsBefore(2,
-                LocalDateTime.now().plusDays(15), page);
+                LocalDateTime.now().plusDays(15), getPage());
 
         assertThat(bookings).isNotEmpty();
         assertThat(bookings).hasSize(1).contains(mockBooking1);
@@ -108,19 +105,8 @@ class BookingRepositoryTest {
 
     @Test
     void testFindAllByBookerId_StartIsAfter() {
-        userRepository.save(mockUserFirst);
-        userRepository.save(mockUserSecond);
-        itemRepository.save(mockItem1);
-        itemRepository.save(mockItem2);
-        bookingRepository.save(mockBooking1);
-        bookingRepository.save(mockBooking2);
-        bookingRepository.save(mockBooking3);
-        bookingRepository.save(mockBooking4);
 
-        Sort sortById = Sort.by(Sort.Direction.DESC, "start");
-        Pageable page = PageRequest.of(PAGE, SIZE, sortById);
-
-        Collection<Booking> bookings = bookingRepository.findAllByBookerAndFutureState(2, page);
+        Collection<Booking> bookings = bookingRepository.findAllByBookerAndFutureState(2, getPage());
 
         assertThat(bookings).isNotEmpty();
         assertThat(bookings).hasSize(2).contains(mockBooking1, mockBooking2);
@@ -128,20 +114,9 @@ class BookingRepositoryTest {
 
     @Test
     void testFindAllByBookerId_Status() {
-        userRepository.save(mockUserFirst);
-        userRepository.save(mockUserSecond);
-        itemRepository.save(mockItem1);
-        itemRepository.save(mockItem2);
-        bookingRepository.save(mockBooking1);
-        bookingRepository.save(mockBooking2);
-        bookingRepository.save(mockBooking3);
-        bookingRepository.save(mockBooking4);
-
-        Sort sortById = Sort.by(Sort.Direction.DESC, "start");
-        Pageable page = PageRequest.of(PAGE, SIZE, sortById);
 
         Collection<Booking> bookings = bookingRepository.findAllByBookerIdAndStatus(1,
-                BookingStatus.REJECTED, page);
+                BookingStatus.REJECTED, getPage());
 
         assertThat(bookings).isNotEmpty();
         assertThat(bookings).hasSize(1).contains(mockBooking4);
@@ -149,19 +124,8 @@ class BookingRepositoryTest {
 
     @Test
     void testFindAllByItemOwnerId() {
-        userRepository.save(mockUserFirst);
-        userRepository.save(mockUserSecond);
-        itemRepository.save(mockItem1);
-        itemRepository.save(mockItem2);
-        bookingRepository.save(mockBooking1);
-        bookingRepository.save(mockBooking2);
-        bookingRepository.save(mockBooking3);
-        bookingRepository.save(mockBooking4);
 
-        Sort sortById = Sort.by(Sort.Direction.DESC, "start");
-        Pageable page = PageRequest.of(PAGE, SIZE, sortById);
-
-        Collection<Booking> bookings = bookingRepository.findAllByItemOwnerId(1, page);
+        Collection<Booking> bookings = bookingRepository.findAllByItemOwnerId(1, getPage());
 
         assertThat(bookings).isNotEmpty();
         assertThat(bookings).hasSize(2).contains(mockBooking1, mockBooking2);
@@ -169,20 +133,9 @@ class BookingRepositoryTest {
 
     @Test
     void testFindAllByItemOwnerIdEndIsAfterAndStartIsBefore() {
-        userRepository.save(mockUserFirst);
-        userRepository.save(mockUserSecond);
-        itemRepository.save(mockItem1);
-        itemRepository.save(mockItem2);
-        bookingRepository.save(mockBooking1);
-        bookingRepository.save(mockBooking2);
-        bookingRepository.save(mockBooking3);
-        bookingRepository.save(mockBooking4);
-
-        Sort sortById = Sort.by(Sort.Direction.DESC, "start");
-        Pageable page = PageRequest.of(PAGE, SIZE, sortById);
 
         Collection<Booking> bookings = bookingRepository.findAllByItemOwnerIdAndEndIsAfterAndStartIsBefore(1,
-                LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), page);
+                LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), getPage());
 
         assertThat(bookings).isNotEmpty();
         assertThat(bookings).hasSize(1).contains(mockBooking1);
@@ -190,74 +143,33 @@ class BookingRepositoryTest {
 
     @Test
     void testFindAllByItemOwnerIdEndIsBefore() {
-        userRepository.save(mockUserFirst);
-        userRepository.save(mockUserSecond);
-        itemRepository.save(mockItem1);
-        itemRepository.save(mockItem2);
-        bookingRepository.save(mockBooking1);
-        bookingRepository.save(mockBooking2);
-        bookingRepository.save(mockBooking3);
-        bookingRepository.save(mockBooking4);
-
-        Sort sortById = Sort.by(Sort.Direction.DESC, "start");
-        Pageable page = PageRequest.of(PAGE, SIZE, sortById);
 
         Collection<Booking> bookings = bookingRepository.findAllByItemOwnerIdAndEndIsBefore(1,
-                LocalDateTime.now().plusMonths(1).plusDays(4), page);
+                LocalDateTime.now().plusMonths(1).plusDays(4), getPage());
 
         assertThat(bookings).hasSize(2).contains(mockBooking1, mockBooking2);
     }
 
     @Test
     void testFindAllByItemOwnerIdStartIsAfter() {
-        userRepository.save(mockUserFirst);
-        userRepository.save(mockUserSecond);
-        itemRepository.save(mockItem1);
-        itemRepository.save(mockItem2);
-        bookingRepository.save(mockBooking1);
-        bookingRepository.save(mockBooking2);
-        bookingRepository.save(mockBooking3);
-        bookingRepository.save(mockBooking4);
-
-        Sort sortById = Sort.by(Sort.Direction.DESC, "start");
-        Pageable page = PageRequest.of(PAGE, SIZE, sortById);
 
         Collection<Booking> bookings = bookingRepository.findAllByItemOwnerIdAndStartIsAfter(2,
-                LocalDateTime.now().plusDays(2), page);
+                LocalDateTime.now().plusDays(2), getPage());
 
         assertThat(bookings).hasSize(2).contains(mockBooking3, mockBooking4);
     }
 
     @Test
     void testFindAllByItemOwnerIdStatus() {
-        userRepository.save(mockUserFirst);
-        userRepository.save(mockUserSecond);
-        itemRepository.save(mockItem1);
-        itemRepository.save(mockItem2);
-        bookingRepository.save(mockBooking1);
-        bookingRepository.save(mockBooking2);
-        bookingRepository.save(mockBooking3);
-        bookingRepository.save(mockBooking4);
-
-        Sort sortById = Sort.by(Sort.Direction.DESC, "start");
-        Pageable page = PageRequest.of(PAGE, SIZE, sortById);
 
         Collection<Booking> bookings = bookingRepository.findAllByItemOwnerIdAndStatus(1,
-                BookingStatus.WAITING, page);
+                BookingStatus.WAITING, getPage());
 
         assertThat(bookings).hasSize(1).contains(mockBooking1);
     }
 
     @Test
     void testFindFirstByItemOwnerIdStatusOrderByEnd() {
-        userRepository.save(mockUserFirst);
-        userRepository.save(mockUserSecond);
-        itemRepository.save(mockItem1);
-        itemRepository.save(mockItem2);
-        bookingRepository.save(mockBooking1);
-        bookingRepository.save(mockBooking2);
-        bookingRepository.save(mockBooking3);
-        bookingRepository.save(mockBooking4);
 
         Optional<Booking> bookings = bookingRepository.findFirstByItemIdAndStatusOrderByEnd(1,
                 BookingStatus.APPROVED);
@@ -268,14 +180,6 @@ class BookingRepositoryTest {
 
     @Test
     void testFindFirstByItemOwnerIdStatusOrderByEndDesc() {
-        userRepository.save(mockUserFirst);
-        userRepository.save(mockUserSecond);
-        itemRepository.save(mockItem1);
-        itemRepository.save(mockItem2);
-        bookingRepository.save(mockBooking1);
-        bookingRepository.save(mockBooking2);
-        bookingRepository.save(mockBooking3);
-        bookingRepository.save(mockBooking4);
 
         Optional<Booking> bookings = bookingRepository.findFirstByItemIdAndStatusOrderByEndDesc(2,
                 BookingStatus.REJECTED);
@@ -286,14 +190,6 @@ class BookingRepositoryTest {
 
     @Test
     void testFindFirstByBookerIdAndItemId_StatusAndStartAreBefore() {
-        userRepository.save(mockUserFirst);
-        userRepository.save(mockUserSecond);
-        itemRepository.save(mockItem1);
-        itemRepository.save(mockItem2);
-        bookingRepository.save(mockBooking1);
-        bookingRepository.save(mockBooking2);
-        bookingRepository.save(mockBooking3);
-        bookingRepository.save(mockBooking4);
 
         Optional<Booking> bookings = bookingRepository.findFirstByBookerIdAndItemIdAndStatusAndStartBefore(1,
                 2, BookingStatus.WAITING, LocalDateTime.now().plusDays(7));

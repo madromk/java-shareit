@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -8,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import ru.practicum.shareit.exception.InputDataException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.UserController;
@@ -45,16 +47,19 @@ class UserControllerTest {
     private final UserDto mockUserDto = UserDto.builder().id(1).name("UserDto").email("UserDto@ya.ru").build();
     private final User mockUser = User.builder().id(1).name("User1").email("User1@ya.ru").build();
 
+    MockHttpServletRequestBuilder getContentWithPostMethod(String url) throws JsonProcessingException {
+        return post(url)
+                .content(objectMapper.writeValueAsString(mockUserDto))
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON);
+    }
 
     @Test
     void testAddUser() throws Exception {
         when(userService.addUser(any())).thenReturn(mockUserDto);
 
-        mockMvc.perform(post("/users")
-                        .content(objectMapper.writeValueAsString(mockUserDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(getContentWithPostMethod("/users"))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(mockUserDto.getId()), Integer.class))
@@ -127,11 +132,7 @@ class UserControllerTest {
         when(userService.addUser(Mockito.any(UserDto.class)))
                 .thenThrow(new ValidationException("Одно или несколько условий не выполняются"));
 
-        mockMvc.perform(post("/users")
-                        .content(objectMapper.writeValueAsString(mockUserDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(getContentWithPostMethod("/users"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }

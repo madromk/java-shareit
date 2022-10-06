@@ -14,7 +14,7 @@ import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.trait.PageTrait;
+import ru.practicum.shareit.trait.PageTool;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
@@ -24,7 +24,7 @@ import java.util.Collection;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class BookingServiceImpl implements BookingService, PageTrait {
+public class BookingServiceImpl implements BookingService, PageTool {
     private final ItemService itemService;
     private final UserService userService;
     private final BookingRepository bookingRepository;
