@@ -1,14 +1,11 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 /**
  * // TODO .
@@ -16,6 +13,7 @@ import java.util.Collection;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ItemDto {
     private int id;
     @NotBlank
@@ -28,11 +26,13 @@ public class ItemDto {
     private User owner;
     private Booking lastBooking;
     private Booking nextBooking;
-    private Collection<Comment> comments = new ArrayList<>();
+    private Integer requestId;
+    private List<Comment> comments = new ArrayList<>();
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     public static class User {
         private int id;
         private String name;
@@ -42,6 +42,7 @@ public class ItemDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Data
+    @Builder
     public static class Booking {
         private int id;
         private int bookerId;
