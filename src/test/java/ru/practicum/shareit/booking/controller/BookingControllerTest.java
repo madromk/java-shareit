@@ -90,25 +90,6 @@ class BookingControllerTest {
             .status(BookingStatus.WAITING)
             .build();
 
-    MockHttpServletRequestBuilder getContentWithPatchMethod() throws JsonProcessingException {
-        return patch("/bookings/1")
-                .content(objectMapper.writeValueAsString(mockBookingDto))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .header(HEADER_USER_ID, 1)
-                .queryParam("approved", "true");
-    }
-
-    MockHttpServletRequestBuilder getContentWithGetMethod(String url) throws JsonProcessingException {
-        return get(url)
-                .content(objectMapper.writeValueAsString(mockBookingDto))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .header(HEADER_USER_ID, 1);
-    }
-
 
     @Test
     void testCreateItem() throws Exception {
@@ -259,5 +240,24 @@ class BookingControllerTest {
                         .queryParam("state", "UNSUPPORTED_STATUS"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    MockHttpServletRequestBuilder getContentWithPatchMethod() throws JsonProcessingException {
+        return patch("/bookings/1")
+                .content(objectMapper.writeValueAsString(mockBookingDto))
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HEADER_USER_ID, 1)
+                .queryParam("approved", "true");
+    }
+
+    MockHttpServletRequestBuilder getContentWithGetMethod(String url) throws JsonProcessingException {
+        return get(url)
+                .content(objectMapper.writeValueAsString(mockBookingDto))
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HEADER_USER_ID, 1);
     }
 }

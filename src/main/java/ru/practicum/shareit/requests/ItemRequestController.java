@@ -41,8 +41,8 @@ public class ItemRequestController {
     @GetMapping
     public Collection<ItemRequestDto> getAllRequestByUserId(@RequestHeader(HEADER_USER_ID) int userId) {
         log.info("Получен запрос к эндпоинту GET /requests");
-        Collection<ItemRequest> allRequestByUserId = requestService.getAllRequestByUserId(userId);
-        return allRequestByUserId.stream().map(itemRequestMapper::toItemRequestDto).collect(Collectors.toList());
+        Collection<ItemRequest> allRequestsByUserId = requestService.getAllRequestByUserId(userId);
+        return allRequestsByUserId.stream().map(itemRequestMapper::toItemRequestDto).collect(Collectors.toList());
     }
 
     @GetMapping("/all")

@@ -88,15 +88,6 @@ class ItemControllerTest {
             .created(LocalDateTime.now())
             .build();
 
-    MockHttpServletRequestBuilder getContentWithPostMethod(String url) throws JsonProcessingException {
-        return post(url)
-                .content(objectMapper.writeValueAsString(mockItemDto))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .header(HEADER_USER_ID, 1);
-    }
-
 
     @Test
     void testCreateItem() throws Exception {
@@ -277,6 +268,15 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.authorName", is(mockCommentDto.getAuthorName())))
                 .andExpect(jsonPath("$.created", is(mockCommentDto.getCreated()
                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
+    }
+
+    MockHttpServletRequestBuilder getContentWithPostMethod(String url) throws JsonProcessingException {
+        return post(url)
+                .content(objectMapper.writeValueAsString(mockItemDto))
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HEADER_USER_ID, 1);
     }
 
 }

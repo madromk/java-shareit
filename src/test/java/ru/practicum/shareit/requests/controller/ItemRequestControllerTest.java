@@ -51,15 +51,6 @@ class ItemRequestControllerTest {
     private final ItemRequest mockItemRequest = ItemRequest.builder().id(1).description("Description")
             .requester(mockUser).created(LocalDateTime.now()).build();
 
-    MockHttpServletRequestBuilder getContentWithGPostMethod(String url) throws JsonProcessingException {
-        return post(url)
-                .content(objectMapper.writeValueAsString(mockItemRequestDto))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .header(HEADER_USER_ID, 1);
-    }
-
 
     @Test
     void testCreateItemRequest() throws Exception {
@@ -145,5 +136,14 @@ class ItemRequestControllerTest {
                 .andExpect(jsonPath("$.requester.email", is(mockItemRequestDto.getRequester().getEmail())))
                 .andExpect(jsonPath("$.created", is(mockItemRequestDto.getCreated()
                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
+    }
+
+    MockHttpServletRequestBuilder getContentWithGPostMethod(String url) throws JsonProcessingException {
+        return post(url)
+                .content(objectMapper.writeValueAsString(mockItemRequestDto))
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(HEADER_USER_ID, 1);
     }
 }

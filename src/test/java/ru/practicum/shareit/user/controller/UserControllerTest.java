@@ -47,13 +47,6 @@ class UserControllerTest {
     private final UserDto mockUserDto = UserDto.builder().id(1).name("UserDto").email("UserDto@ya.ru").build();
     private final User mockUser = User.builder().id(1).name("User1").email("User1@ya.ru").build();
 
-    MockHttpServletRequestBuilder getContentWithPostMethod(String url) throws JsonProcessingException {
-        return post(url)
-                .content(objectMapper.writeValueAsString(mockUserDto))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON);
-    }
 
     @Test
     void testAddUser() throws Exception {
@@ -135,5 +128,13 @@ class UserControllerTest {
         mockMvc.perform(getContentWithPostMethod("/users"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    MockHttpServletRequestBuilder getContentWithPostMethod(String url) throws JsonProcessingException {
+        return post(url)
+                .content(objectMapper.writeValueAsString(mockUserDto))
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON);
     }
 }
