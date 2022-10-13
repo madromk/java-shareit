@@ -46,6 +46,7 @@ class BookingMapperTest {
             .start(localDateTime.plusDays(1))
             .end(localDateTime.plusDays(2))
             .itemId(1)
+            .status(BookingStatus.WAITING)
             .build();
 
     private final BookingDto bookingDtoTest = BookingDto.builder()
