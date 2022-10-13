@@ -50,6 +50,8 @@ public class BookingServiceImpl implements BookingService, PageTool {
         booking.setBooker(new User(userId, null, null));
         booking.setItem(item);
         booking.setStatus(BookingStatus.WAITING);
+        System.out.println(bookingRepository.findFirstByBookerIdAndItemIdAndStatusAndStartBefore(userId, itemId, BookingStatus.APPROVED,
+                LocalDateTime.now())); //удалить
         return bookingRepository.save(booking);
     }
 

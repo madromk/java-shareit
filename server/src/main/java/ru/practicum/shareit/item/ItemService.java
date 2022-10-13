@@ -128,8 +128,7 @@ public class ItemService implements PageTool {
         User user = userService.getUser(userId);
         Item item = getItemById(itemId, userId);
         bookingRepository.findFirstByBookerIdAndItemIdAndStatusAndStartBefore(userId, itemId, BookingStatus.APPROVED,
-                        LocalDateTime.now())
-                .orElseThrow(() -> new ValidationException("Ошибка во входных данных"));
+                LocalDateTime.now()).orElseThrow(() -> new ValidationException("Пользователь не может оставить комментарий"));
 
         comment.setAuthor(user);
         comment.setItem(item);

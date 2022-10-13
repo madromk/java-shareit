@@ -1,6 +1,5 @@
 package ru.practicum.shareit.exeption;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -13,13 +12,13 @@ import javax.validation.ConstraintViolationException;
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ValidationErrorResponse handleUnsupportedStatusException(final MethodArgumentTypeMismatchException e) {
-        return new ValidationErrorResponse(String.format(e.getName(), e.getValue()));
+    public ValidationErrorResponse handleConstraintViolationException(final ConstraintViolationException e) {
+        return new ValidationErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ValidationErrorResponse handleConstraintViolationException(final ConstraintViolationException e) {
-        return new ValidationErrorResponse(e.getMessage());
+    public ValidationErrorResponse handleUnsupportedStatusException(final MethodArgumentTypeMismatchException e) {
+        return new ValidationErrorResponse(String.format("Unknown %s: %s", e.getName(), e.getValue()));
     }
 }

@@ -47,7 +47,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public CommentDto addComment(@RequestHeader(HEADER_USER_ID) int userId, @PathVariable int itemId,
                                  @RequestBody CommentDto commentDto) {
-        log.info("Получен запрос к эндпоинту: POST /{itemId}/comment");
+        log.info("Получен запрос к эндпоинту: POST /{itemId}/comment. Пользователь с id=" + userId);
         Comment comment = itemService.addComment(userId, itemId, commentMapper.toComment(commentDto));
         return commentMapper.toCommentDto(comment);
     }
@@ -106,7 +106,7 @@ public class ItemController {
 
     @ExceptionHandler
     public ResponseEntity<String> handleException(Exception e) {
-        log.warn("При обработке запроса возникло исключение " + e.getMessage());
+        log.warn("При обработке запроса возникло исключение: " + e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

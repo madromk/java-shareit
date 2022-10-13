@@ -280,6 +280,6 @@ public class ItemServiceUnitTest {
         Exception exception1 = assertThrows(ValidationException.class, () ->
                 itemService.addComment(user1.getId(), mockItem1.getId(), mockComment));
 
-        assertEquals("Ошибка во входных данных", exception1.getMessage());
+        assertEquals("Пользователь не может оставить комментарий", exception1.getMessage());
     }
 }
