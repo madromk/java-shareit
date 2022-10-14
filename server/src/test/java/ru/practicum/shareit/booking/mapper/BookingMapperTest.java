@@ -41,7 +41,18 @@ class BookingMapperTest {
             .booker(booker)
             .build();
 
-    private final CreatedBookingDto createdBookingDtoTest = CreatedBookingDto.builder()
+    private final CreatedBookingDto createdBookingDtoTest1 = CreatedBookingDto.builder()
+            .id(1)
+            .start(localDateTime.plusDays(1))
+            .end(localDateTime.plusDays(2))
+            .item(item)
+            .status(BookingStatus.WAITING)
+            .booker(booker)
+            .itemName("Сверло")
+            .itemId(item.getId())
+            .build();
+
+    private final CreatedBookingDto createdBookingDtoTest2 = CreatedBookingDto.builder()
             .id(1)
             .start(localDateTime.plusDays(1))
             .end(localDateTime.plusDays(2))
@@ -70,7 +81,7 @@ class BookingMapperTest {
     @Test
     public void testToCreatedBookingDto() {
         CreatedBookingDto createdBookingDto = bookingMapper.toCreatedBookingDto(booking);
-        assertEquals(createdBookingDtoTest, createdBookingDto);
+        assertEquals(createdBookingDtoTest2, createdBookingDto);
     }
 
     @Test
@@ -81,7 +92,7 @@ class BookingMapperTest {
 
     @Test
     void testToBooking() {
-        Booking booking = bookingMapper.toBooking(createdBookingDtoTest);
+        Booking booking = bookingMapper.toBooking(createdBookingDtoTest1);
         assertEquals(bookingTest, booking);
     }
 }
