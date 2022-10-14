@@ -45,8 +45,10 @@ class BookingMapperTest {
             .id(1)
             .start(localDateTime.plusDays(1))
             .end(localDateTime.plusDays(2))
-            .itemId(1)
+            .item(item)
             .status(BookingStatus.WAITING)
+            .booker(booker)
+            .itemName("Сверло")
             .build();
 
     private final BookingDto bookingDtoTest = BookingDto.builder()

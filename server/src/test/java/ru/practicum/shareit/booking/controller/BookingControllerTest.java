@@ -79,7 +79,7 @@ class BookingControllerTest {
             .id(1)
             .start(LocalDateTime.now().plusDays(3))
             .end(LocalDateTime.now().plusDays(4))
-            .itemId(1)
+            .item(mockItem)
             .build();
 
     private final BookingDto mockBookingDto = BookingDto.builder()
@@ -108,8 +108,7 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.start", is(mockCreatedBookingDto.getStart()
                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))))
                 .andExpect(jsonPath("$.end", is(mockCreatedBookingDto.getEnd()
-                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))))
-                .andExpect(jsonPath("$.itemId", is(mockCreatedBookingDto.getItemId()), Integer.class));
+                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
     }
 
     @Test
